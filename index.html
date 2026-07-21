@@ -41,15 +41,12 @@
         }
         body,
         html {
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
             background: #0b0b0f;
             font-family: 'Helvetica Neue', Arial, sans-serif;
             overflow: hidden;
             color: #fff;
-            position: fixed;
-            top: 0;
-            left: 0;
         }
 
         /* ===== GAME IFRAME ===== */
@@ -57,20 +54,17 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
             z-index: 1;
             display: block;
         }
         .game-wrapper iframe {
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
             border: none;
             background: #0b0b0f;
             display: block;
-            position: fixed;
-            top: 0;
-            left: 0;
         }
 
         /* ===== SPLASH SCREEN ===== */
@@ -78,8 +72,8 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
             background: radial-gradient(circle at center, #1a1a26 0%, #050508 100%);
             z-index: 999;
             display: flex;
@@ -249,20 +243,6 @@
                 letter-spacing: 3px;
             }
         }
-
-        /* ===== FULLSCREEN SUPPORT ===== */
-        iframe:-webkit-full-screen {
-            width: 100%;
-            height: 100%;
-        }
-        iframe:-moz-full-screen {
-            width: 100%;
-            height: 100%;
-        }
-        iframe:fullscreen {
-            width: 100%;
-            height: 100%;
-        }
     </style>
 </head>
 <body>
@@ -302,30 +282,33 @@
 
         var splash = document.getElementById('splash');
         var escOverlay = document.getElementById('escOverlay');
-        var gameFrame = document.getElementById('gameFrame');
+        var gameWrapper = document.querySelector('.game-wrapper');
 
-        // ===== 1. REQUEST FULLSCREEN ON LOAD =====
-        gameFrame.addEventListener('load', function() {
-            gameFrame.focus();
+        // ===== 1. REQUEST FULLSCREEN ON SPLASH FADE =====
+        function requestFullscreen() {
+            var elem = document.documentElement;
             
-            // Request fullscreen with all vendor prefixes
-            setTimeout(function() {
-                var requestFS = gameFrame.requestFullscreen ||
-                                gameFrame.webkitRequestFullscreen ||
-                                gameFrame.mozRequestFullScreen ||
-                                gameFrame.msRequestFullscreen;
-                
-                if (requestFS) {
-                    requestFS.call(gameFrame).catch(function(err) {
-                        console.log('Fullscreen request:', err.message);
-                    });
-                }
-            }, 500);
-        });
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen().catch(function(err) {
+                    console.log('Fullscreen request:', err.message);
+                });
+            } else if (elem.webkitRequestFullscreen) {
+                elem.webkitRequestFullscreen();
+            } else if (elem.mozRequestFullScreen) {
+                elem.mozRequestFullScreen();
+            } else if (elem.msRequestFullscreen) {
+                elem.msRequestFullscreen();
+            }
+        }
 
         // ===== 2. SPLASH TIMER (3.5s) =====
         setTimeout(function() {
             splash.classList.add('fade-out');
+            
+            // Request fullscreen after splash fades
+            setTimeout(function() {
+                requestFullscreen();
+            }, 600);
 
             // Show ESC overlay after splash, auto-hide after 6s
             setTimeout(function() {
@@ -340,6 +323,13 @@
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape' && escOverlay.classList.contains('show')) {
                 if (confirm('Exit the game and return to the Ark & Stone studio?')) {
+                    if (document.fullscreenElement || document.webkitFullscreenElement) {
+                        if (document.exitFullscreen) {
+                            document.exitFullscreen();
+                        } else if (document.webkitExitFullscreen) {
+                            document.webkitExitFullscreen();
+                        }
+                    }
                     window.location.href = 'https://Ark&Stone.lovable.app';
                 }
             }
@@ -349,6 +339,13 @@
         escOverlay.addEventListener('click', function() {
             if (escOverlay.classList.contains('show')) {
                 if (confirm('Exit the game and return to the Ark & Stone studio?')) {
+                    if (document.fullscreenElement || document.webkitFullscreenElement) {
+                        if (document.exitFullscreen) {
+                            document.exitFullscreen();
+                        } else if (document.webkitExitFullscreen) {
+                            document.webkitExitFullscreen();
+                        }
+                    }
                     window.location.href = 'https://Ark&Stone.lovable.app';
                 }
             }
@@ -357,26 +354,13 @@
         // ===== 5. HIDE SCROLLBARS & PREVENT CONTEXT MENU =====
         document.body.style.overflow = 'hidden';
         document.documentElement.style.overflow = 'hidden';
-        document.body.style.margin = '0';
-        document.body.style.padding = '0';
         
         // Disable right-click to prevent Rosebud menu exposure
         document.addEventListener('contextmenu', function(e) {
             e.preventDefault();
         });
 
-        // ===== 6. FULLSCREEN CHANGE DETECTION =====
-        document.addEventListener('fullscreenchange', function() {
-            console.log('Fullscreen status changed');
-        });
-        document.addEventListener('webkitfullscreenchange', function() {
-            console.log('Fullscreen status changed (webkit)');
-        });
-        document.addEventListener('mozfullscreenchange', function() {
-            console.log('Fullscreen status changed (moz)');
-        });
-
-        console.log('🪨 Ark & Stone Design Studios — Game loaded. Requesting fullscreen...');
+        console.log('🪨 Ark & Stone Design Studios — Game loaded. Preparing fullscreen...');
     })();
 </script>
 </body>
