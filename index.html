@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- ===== META TAGS (Upgrade #1) ===== -->
+    <title>Ark & Stone Design Studios — Play Gassy Rainbow Sparkle Quest</title>
+    <meta name="title" content="Ark & Stone Design Studios — Play Gassy Rainbow Sparkle Quest" />
+    <meta name="description" content="Fly, dodge, and collect in this original helicopter-style adventure with infinite & 50-level modes. Shop pets, upgrades, skins & more!" />
+    <meta name="keywords" content="Ark & Stone, game studio, helicopter game, rainbow sparkle, rosebud, indie games" />
+    <link rel="canonical" href="https://Ark&Stone.lovable.app" />
+
+    <!-- Open Graph / Facebook (Upgrade #2) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://Ark&Stone.lovable.app" />
+    <meta property="og:title" content="Ark & Stone Design Studios — Play Gassy Rainbow Sparkle Quest" />
+    <meta property="og:description" content="Fly, dodge, and collect in this original helicopter-style adventure with infinite & 50-level modes. Shop pets, upgrades, skins & more!" />
+    <meta property="og:image" content="https://Ark&Stone.lovable.app/og-image.jpg" />
+
+    <!-- Twitter (Upgrade #3) -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://Ark&Stone.lovable.app" />
+    <meta name="twitter:title" content="Ark & Stone Design Studios — Play Gassy Rainbow Sparkle Quest" />
+    <meta name="twitter:description" content="Fly, dodge, and collect in this original helicopter-style adventure with infinite & 50-level modes. Shop pets, upgrades, skins & more!" />
+    <meta name="twitter:image" content="https://Ark&Stone.lovable.app/og-image.jpg" />
+
+    <!-- Favicon (Upgrade #4) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>" />
+
+    <!-- Theme Color (Upgrade #5) -->
+    <meta name="theme-color" content="#0b0b0f" />
+    <meta name="msapplication-TileColor" content="#0b0b0f" />
+
+    <style>
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body,
+        html {
+            width: 100%;
+            height: 100%;
+            background: #0b0b0f;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            overflow: hidden;
+            color: #fff;
+        }
+
+        /* ===== GAME IFRAME ===== */
+        .game-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        .game-wrapper iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: #0b0b0f;
+        }
+
+        /* ===== SPLASH SCREEN ===== */
+        .splash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #1a1a26 0%, #050508 100%);
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease, visibility 1s;
+            opacity: 1;
+            visibility: visible;
+            text-align: center;
+            padding: 20px;
+        }
+        .splash.fade-out {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        /* ===== LOGO ===== */
+        .studio-logo {
+            max-width: 80%;
+            height: auto;
+            margin-bottom: 16px;
+            animation: pulse 2.5s infinite ease-in-out;
+            filter: drop-shadow(0 0 40px rgba(255, 255, 255, 0.10));
+        }
+        .studio-logo-text {
+            font-size: 3.8rem;
+            font-weight: 900;
+            letter-spacing: 12px;
+            text-transform: uppercase;
+            color: #fff;
+            text-shadow: 0 0 40px rgba(255, 255, 255, 0.15);
+            line-height: 1.1;
+        }
+        .studio-logo-text .ampersand {
+            color: #a0a0c0;
+            font-weight: 300;
+            letter-spacing: 6px;
+        }
+        .studio-sub {
+            font-size: 0.95rem;
+            letter-spacing: 8px;
+            color: #65657b;
+            text-transform: uppercase;
+            margin-top: -6px;
+            font-weight: 300;
+        }
+
+        /* ===== LOADER (Upgrade #6) ===== */
+        .loader {
+            margin-top: 44px;
+            position: relative;
+            width: 40px;
+            height: 40px;
+        }
+        .loader::before,
+        .loader::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            animation: spin 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        }
+        .loader::before {
+            width: 100%;
+            height: 100%;
+            border-top-color: #ffffff;
+            border-right-color: rgba(255, 255, 255, 0.2);
+            animation-duration: 1.2s;
+        }
+        .loader::after {
+            width: 60%;
+            height: 60%;
+            top: 20%;
+            left: 20%;
+            border-bottom-color: #a0a0c0;
+            border-left-color: rgba(160, 160, 192, 0.2);
+            animation-duration: 0.8s;
+            animation-direction: reverse;
+        }
+
+        /* ===== ESC OVERLAY (auto-hides after 6s) ===== */
+        .esc-overlay {
+            position: fixed;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 50;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 10px 28px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            color: #aaa;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            pointer-events: none;
+            font-weight: 300;
+            user-select: none;
+        }
+        .esc-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .esc-overlay kbd {
+            background: #222;
+            padding: 2px 12px;
+            border-radius: 4px;
+            color: #fff;
+            margin: 0 6px;
+            font-size: 0.75rem;
+            font-weight: 400;
+        }
+
+        /* ===== KEYFRAMES ===== */
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        @keyframes pulse {
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.9;
+            }
+            50% {
+                transform: scale(1.04);
+                opacity: 1;
+            }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 600px) {
+            .studio-logo-text {
+                font-size: 2.4rem;
+                letter-spacing: 6px;
+            }
+            .studio-sub {
+                font-size: 0.7rem;
+                letter-spacing: 5px;
+            }
+            .esc-overlay {
+                font-size: 0.7rem;
+                padding: 6px 16px;
+                bottom: 16px;
+            }
+            .loader {
+                width: 32px;
+                height: 32px;
+            }
+        }
+        @media (max-width: 400px) {
+            .studio-logo-text {
+                font-size: 1.8rem;
+                letter-spacing: 4px;
+            }
+            .studio-sub {
+                font-size: 0.6rem;
+                letter-spacing: 3px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== SPLASH SCREEN ===== -->
+    <div id="splash" class="splash">
+        <!-- 
+          Replace the src with your actual logo URL (PNG/SVG).
+          If the image fails, the fallback text "ARK & STONE" appears.
+        -->
+        <img class="studio-logo"
+        src="https://Ark&Stone.lovable.app/logo.png"
+        alt="Ark & Stone Design Studios"
+        onerror="this.style.display='none'; document.getElementById('fallbackText').style.display='block';"
+        />
+        <div id="fallbackText" class="studio-logo-text" style="display:none;">
+            ARK <span class="ampersand">&amp;</span> STONE
+        </div>
+        <div class="studio-sub">Design Studios · Presents</div>
+        <div class="loader"></div>
+    </div>
+
+    <!-- ===== GAME IFRAME ===== -->
+    <div class="game-wrapper">
+        <iframe id="gameFrame"
+        src="https://rosebud.ai/play/gassy-rainbow-sparkle-quest-copy"
+        allow="autoplay; payment; fullscreen"
+        loading="lazy"
+        title="Gassy Rainbow Sparkle Quest — Ark & Stone Design Studios">
+    </iframe>
+</div>
+
+<!-- ===== ESC OVERLAY ===== -->
+<div id="escOverlay" class="esc-overlay">
+    Press <kbd>ESC</kbd> to return to studio
+</div>
+
+<script>
+    (function() {
+        'use strict';
+
+        var splash = document.getElementById('splash');
+        var escOverlay = document.getElementById('escOverlay');
+
+        // ===== 1. SPLASH TIMER (3.5s) =====
+        setTimeout(function() {
+            splash.classList.add('fade-out');
+
+            // Show ESC overlay after splash, auto-hide after 6s
+            setTimeout(function() {
+                escOverlay.classList.add('show');
+                setTimeout(function() {
+                    escOverlay.classList.remove('show');
+                }, 6000);
+            }, 1200);
+        }, 3500);
+
+        // ===== 2. ESC KEY EXIT =====
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && escOverlay.classList.contains('show')) {
+                if (confirm('Exit the game and return to the Ark & Stone studio?')) {
+                    window.location.href = 'https://Ark&Stone.lovable.app';
+                }
+            }
+        });
+
+        // ===== 3. CLICK OVERLAY TO EXIT =====
+        escOverlay.addEventListener('click', function() {
+            if (escOverlay.classList.contains('show')) {
+                if (confirm('Exit the game and return to the Ark & Stone studio?')) {
+                    window.location.href = 'https://Ark&Stone.lovable.app';
+                }
+            }
+        });
+
+        // ===== 4. IFRAME FOCUS & TOUCH =====
+        var iframe = document.getElementById('gameFrame');
+        iframe.addEventListener('load', function() {
+            iframe.focus();
+        });
+
+        console.log('🪨 Ark & Stone Design Studios — Game loaded. Enjoy!');
+    })();
+</script>
+</body>
+</html>
