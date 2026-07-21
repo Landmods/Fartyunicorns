@@ -41,29 +41,36 @@
         }
         body,
         html {
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             background: #0b0b0f;
             font-family: 'Helvetica Neue', Arial, sans-serif;
             overflow: hidden;
             color: #fff;
+            position: fixed;
+            top: 0;
+            left: 0;
         }
 
         /* ===== GAME IFRAME ===== */
         .game-wrapper {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             z-index: 1;
+            display: block;
         }
         .game-wrapper iframe {
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             border: none;
             background: #0b0b0f;
             display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
         }
 
         /* ===== SPLASH SCREEN ===== */
@@ -71,8 +78,8 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             background: radial-gradient(circle at center, #1a1a26 0%, #050508 100%);
             z-index: 999;
             display: flex;
@@ -242,16 +249,26 @@
                 letter-spacing: 3px;
             }
         }
+
+        /* ===== FULLSCREEN SUPPORT ===== */
+        iframe:-webkit-full-screen {
+            width: 100%;
+            height: 100%;
+        }
+        iframe:-moz-full-screen {
+            width: 100%;
+            height: 100%;
+        }
+        iframe:fullscreen {
+            width: 100%;
+            height: 100%;
+        }
     </style>
 </head>
 <body>
 
     <!-- ===== SPLASH SCREEN ===== -->
     <div id="splash" class="splash">
-        <!-- 
-          Replace the src with your actual logo URL (PNG/SVG).
-          If the image fails, the fallback text "ARK & STONE" appears.
-        -->
         <img class="studio-logo"
         src="https://Ark&Stone.lovable.app/logo.png"
         alt="Ark & Stone Design Studios"
@@ -269,7 +286,7 @@
         <iframe id="gameFrame"
         src="https://rosebud.ai/play/gassy-rainbow-sparkle-quest-copy?fullscreen=1&hideNav=1"
         allow="autoplay; payment; fullscreen; web-share"
-        loading="lazy"
+        loading="eager"
         title="Gassy Rainbow Sparkle Quest — Ark & Stone Design Studios">
     </iframe>
 </div>
@@ -291,18 +308,19 @@
         gameFrame.addEventListener('load', function() {
             gameFrame.focus();
             
-            // Try to request fullscreen
-            if (gameFrame.requestFullscreen) {
-                gameFrame.requestFullscreen().catch(function(err) {
-                    console.log('Fullscreen request failed:', err.message);
-                });
-            } else if (gameFrame.webkitRequestFullscreen) {
-                gameFrame.webkitRequestFullscreen();
-            } else if (gameFrame.mozRequestFullScreen) {
-                gameFrame.mozRequestFullScreen();
-            } else if (gameFrame.msRequestFullscreen) {
-                gameFrame.msRequestFullscreen();
-            }
+            // Request fullscreen with all vendor prefixes
+            setTimeout(function() {
+                var requestFS = gameFrame.requestFullscreen ||
+                                gameFrame.webkitRequestFullscreen ||
+                                gameFrame.mozRequestFullScreen ||
+                                gameFrame.msRequestFullscreen;
+                
+                if (requestFS) {
+                    requestFS.call(gameFrame).catch(function(err) {
+                        console.log('Fullscreen request:', err.message);
+                    });
+                }
+            }, 500);
         });
 
         // ===== 2. SPLASH TIMER (3.5s) =====
@@ -339,13 +357,26 @@
         // ===== 5. HIDE SCROLLBARS & PREVENT CONTEXT MENU =====
         document.body.style.overflow = 'hidden';
         document.documentElement.style.overflow = 'hidden';
+        document.body.style.margin = '0';
+        document.body.style.padding = '0';
         
         // Disable right-click to prevent Rosebud menu exposure
         document.addEventListener('contextmenu', function(e) {
             e.preventDefault();
         });
 
-        console.log('🪨 Ark & Stone Design Studios — Game loaded in fullscreen mode. Enjoy!');
+        // ===== 6. FULLSCREEN CHANGE DETECTION =====
+        document.addEventListener('fullscreenchange', function() {
+            console.log('Fullscreen status changed');
+        });
+        document.addEventListener('webkitfullscreenchange', function() {
+            console.log('Fullscreen status changed (webkit)');
+        });
+        document.addEventListener('mozfullscreenchange', function() {
+            console.log('Fullscreen status changed (moz)');
+        });
+
+        console.log('🪨 Ark & Stone Design Studios — Game loaded. Requesting fullscreen...');
     })();
 </script>
 </body>
