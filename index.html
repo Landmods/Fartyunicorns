@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
     <!-- ===== META TAGS (Upgrade #1) ===== -->
     <title>Ark & Stone Design Studios — Play Gassy Rainbow Sparkle Quest</title>
@@ -31,6 +31,8 @@
     <!-- Theme Color (Upgrade #5) -->
     <meta name="theme-color" content="#0b0b0f" />
     <meta name="msapplication-TileColor" content="#0b0b0f" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
     <style>
         /* ===== RESET & BASE ===== */
@@ -38,15 +40,30 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
         }
-        body,
-        html {
+
+        html, body {
             width: 100%;
             height: 100%;
+            min-height: 100vh;
             background: #0b0b0f;
             font-family: 'Helvetica Neue', Arial, sans-serif;
             overflow: hidden;
             color: #fff;
+            position: fixed;
+            top: 0;
+            left: 0;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Prevent scrolling and ensure fullscreen appearance */
+        body {
+            width: 100vw;
+            height: 100vh;
         }
 
         /* ===== GAME IFRAME ===== */
@@ -54,17 +71,23 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             z-index: 1;
             display: block;
+            overflow: hidden;
         }
+
         .game-wrapper iframe {
-            width: 100%;
-            height: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
             border: none;
             background: #0b0b0f;
             display: block;
+            -webkit-appearance: none;
         }
 
         /* ===== SPLASH SCREEN ===== */
@@ -72,8 +95,8 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             background: radial-gradient(circle at center, #1a1a26 0%, #050508 100%);
             z-index: 999;
             display: flex;
@@ -86,6 +109,7 @@
             text-align: center;
             padding: 20px;
         }
+
         .splash.fade-out {
             opacity: 0;
             visibility: hidden;
@@ -100,6 +124,7 @@
             animation: pulse 2.5s infinite ease-in-out;
             filter: drop-shadow(0 0 40px rgba(255, 255, 255, 0.10));
         }
+
         .studio-logo-text {
             font-size: 3.8rem;
             font-weight: 900;
@@ -109,11 +134,13 @@
             text-shadow: 0 0 40px rgba(255, 255, 255, 0.15);
             line-height: 1.1;
         }
+
         .studio-logo-text .ampersand {
             color: #a0a0c0;
             font-weight: 300;
             letter-spacing: 6px;
         }
+
         .studio-sub {
             font-size: 0.95rem;
             letter-spacing: 8px;
@@ -123,13 +150,14 @@
             font-weight: 300;
         }
 
-        /* ===== LOADER (Upgrade #6) ===== */
+        /* ===== LOADER ===== */
         .loader {
             margin-top: 44px;
             position: relative;
             width: 40px;
             height: 40px;
         }
+
         .loader::before,
         .loader::after {
             content: '';
@@ -138,6 +166,7 @@
             border: 3px solid transparent;
             animation: spin 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
         }
+
         .loader::before {
             width: 100%;
             height: 100%;
@@ -145,6 +174,7 @@
             border-right-color: rgba(255, 255, 255, 0.2);
             animation-duration: 1.2s;
         }
+
         .loader::after {
             width: 60%;
             height: 60%;
@@ -156,7 +186,7 @@
             animation-direction: reverse;
         }
 
-        /* ===== ESC OVERLAY (auto-hides after 6s) ===== */
+        /* ===== ESC OVERLAY ===== */
         .esc-overlay {
             position: fixed;
             bottom: 28px;
@@ -176,12 +206,13 @@
             transition: opacity 0.8s ease;
             pointer-events: none;
             font-weight: 300;
-            user-select: none;
         }
+
         .esc-overlay.show {
             opacity: 1;
             pointer-events: auto;
         }
+
         .esc-overlay kbd {
             background: #222;
             padding: 2px 12px;
@@ -201,6 +232,7 @@
                 transform: rotate(360deg);
             }
         }
+
         @keyframes pulse {
             0%,
             100% {
@@ -233,6 +265,7 @@
                 height: 32px;
             }
         }
+
         @media (max-width: 400px) {
             .studio-logo-text {
                 font-size: 1.8rem;
@@ -241,6 +274,16 @@
             .studio-sub {
                 font-size: 0.6rem;
                 letter-spacing: 3px;
+            }
+        }
+
+        /* Hide address bar on mobile */
+        @supports (padding: max(0px)) {
+            body {
+                padding-left: max(0px, env(safe-area-inset-left));
+                padding-right: max(0px, env(safe-area-inset-right));
+                padding-top: max(0px, env(safe-area-inset-top));
+                padding-bottom: max(0px, env(safe-area-inset-bottom));
             }
         }
     </style>
@@ -269,99 +312,78 @@
         loading="eager"
         title="Gassy Rainbow Sparkle Quest — Ark & Stone Design Studios">
     </iframe>
-</div>
+    </div>
 
-<!-- ===== ESC OVERLAY ===== -->
-<div id="escOverlay" class="esc-overlay">
-    Press <kbd>ESC</kbd> to return to studio
-</div>
+    <!-- ===== ESC OVERLAY ===== -->
+    <div id="escOverlay" class="esc-overlay">
+        Press <kbd>ESC</kbd> to return to studio
+    </div>
 
-<script>
-    (function() {
-        'use strict';
+    <script>
+        (function() {
+            'use strict';
 
-        var splash = document.getElementById('splash');
-        var escOverlay = document.getElementById('escOverlay');
-        var gameWrapper = document.querySelector('.game-wrapper');
+            var splash = document.getElementById('splash');
+            var escOverlay = document.getElementById('escOverlay');
 
-        // ===== 1. REQUEST FULLSCREEN ON SPLASH FADE =====
-        function requestFullscreen() {
-            var elem = document.documentElement;
-            
-            if (elem.requestFullscreen) {
-                elem.requestFullscreen().catch(function(err) {
-                    console.log('Fullscreen request:', err.message);
-                });
-            } else if (elem.webkitRequestFullscreen) {
-                elem.webkitRequestFullscreen();
-            } else if (elem.mozRequestFullScreen) {
-                elem.mozRequestFullScreen();
-            } else if (elem.msRequestFullscreen) {
-                elem.msRequestFullscreen();
+            // Hide address bar on mobile by scrolling
+            function hideAddressBar() {
+                window.scrollTo(0, 1);
+                document.body.style.height = window.innerHeight + 'px';
             }
-        }
 
-        // ===== 2. SPLASH TIMER (3.5s) =====
-        setTimeout(function() {
-            splash.classList.add('fade-out');
-            
-            // Request fullscreen after splash fades
-            setTimeout(function() {
-                requestFullscreen();
-            }, 600);
+            // Hide address bar when page loads
+            window.addEventListener('load', hideAddressBar);
+            window.addEventListener('orientationchange', hideAddressBar);
+            window.addEventListener('resize', hideAddressBar);
 
-            // Show ESC overlay after splash, auto-hide after 6s
+            // Initial hide attempt
+            setTimeout(hideAddressBar, 100);
+            setTimeout(hideAddressBar, 500);
+
+            // ===== SPLASH TIMER (3.5s) =====
             setTimeout(function() {
-                escOverlay.classList.add('show');
+                splash.classList.add('fade-out');
+
+                // Show ESC overlay after splash, auto-hide after 6s
                 setTimeout(function() {
-                    escOverlay.classList.remove('show');
-                }, 6000);
-            }, 1200);
-        }, 3500);
+                    escOverlay.classList.add('show');
+                    setTimeout(function() {
+                        escOverlay.classList.remove('show');
+                    }, 6000);
+                }, 1200);
+            }, 3500);
 
-        // ===== 3. ESC KEY EXIT =====
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && escOverlay.classList.contains('show')) {
-                if (confirm('Exit the game and return to the Ark & Stone studio?')) {
-                    if (document.fullscreenElement || document.webkitFullscreenElement) {
-                        if (document.exitFullscreen) {
-                            document.exitFullscreen();
-                        } else if (document.webkitExitFullscreen) {
-                            document.webkitExitFullscreen();
-                        }
+            // ===== ESC KEY EXIT =====
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && escOverlay.classList.contains('show')) {
+                    if (confirm('Exit the game and return to the Ark & Stone studio?')) {
+                        window.location.href = 'https://Ark&Stone.lovable.app';
                     }
-                    window.location.href = 'https://Ark&Stone.lovable.app';
                 }
-            }
-        });
+            });
 
-        // ===== 4. CLICK OVERLAY TO EXIT =====
-        escOverlay.addEventListener('click', function() {
-            if (escOverlay.classList.contains('show')) {
-                if (confirm('Exit the game and return to the Ark & Stone studio?')) {
-                    if (document.fullscreenElement || document.webkitFullscreenElement) {
-                        if (document.exitFullscreen) {
-                            document.exitFullscreen();
-                        } else if (document.webkitExitFullscreen) {
-                            document.webkitExitFullscreen();
-                        }
+            // ===== CLICK OVERLAY TO EXIT =====
+            escOverlay.addEventListener('click', function() {
+                if (escOverlay.classList.contains('show')) {
+                    if (confirm('Exit the game and return to the Ark & Stone studio?')) {
+                        window.location.href = 'https://Ark&Stone.lovable.app';
                     }
-                    window.location.href = 'https://Ark&Stone.lovable.app';
                 }
-            }
-        });
+            });
 
-        // ===== 5. HIDE SCROLLBARS & PREVENT CONTEXT MENU =====
-        document.body.style.overflow = 'hidden';
-        document.documentElement.style.overflow = 'hidden';
-        
-        // Disable right-click to prevent Rosebud menu exposure
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-        });
+            // ===== DISABLE RIGHT-CLICK =====
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+            });
 
-        console.log('🪨 Ark & Stone Design Studios — Game loaded. Preparing fullscreen...');
-    })();
-</script>
+            // ===== PREVENT SCROLLING =====
+            document.addEventListener('touchmove', function(e) {
+                e.preventDefault();
+            }, { passive: false });
+
+            console.log('🪨 Ark & Stone Design Studios — Game loaded in fullscreen mode!');
+        })();
+    </script>
 </body>
 </html>
