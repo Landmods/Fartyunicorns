@@ -63,6 +63,7 @@
             height: 100%;
             border: none;
             background: #0b0b0f;
+            display: block;
         }
 
         /* ===== SPLASH SCREEN ===== */
@@ -266,8 +267,8 @@
     <!-- ===== GAME IFRAME ===== -->
     <div class="game-wrapper">
         <iframe id="gameFrame"
-        src="https://rosebud.ai/play/gassy-rainbow-sparkle-quest-copy"
-        allow="autoplay; payment; fullscreen"
+        src="https://rosebud.ai/play/gassy-rainbow-sparkle-quest-copy?fullscreen=1&hideNav=1"
+        allow="autoplay; payment; fullscreen; web-share"
         loading="lazy"
         title="Gassy Rainbow Sparkle Quest — Ark & Stone Design Studios">
     </iframe>
@@ -284,8 +285,27 @@
 
         var splash = document.getElementById('splash');
         var escOverlay = document.getElementById('escOverlay');
+        var gameFrame = document.getElementById('gameFrame');
 
-        // ===== 1. SPLASH TIMER (3.5s) =====
+        // ===== 1. REQUEST FULLSCREEN ON LOAD =====
+        gameFrame.addEventListener('load', function() {
+            gameFrame.focus();
+            
+            // Try to request fullscreen
+            if (gameFrame.requestFullscreen) {
+                gameFrame.requestFullscreen().catch(function(err) {
+                    console.log('Fullscreen request failed:', err.message);
+                });
+            } else if (gameFrame.webkitRequestFullscreen) {
+                gameFrame.webkitRequestFullscreen();
+            } else if (gameFrame.mozRequestFullScreen) {
+                gameFrame.mozRequestFullScreen();
+            } else if (gameFrame.msRequestFullscreen) {
+                gameFrame.msRequestFullscreen();
+            }
+        });
+
+        // ===== 2. SPLASH TIMER (3.5s) =====
         setTimeout(function() {
             splash.classList.add('fade-out');
 
@@ -298,7 +318,7 @@
             }, 1200);
         }, 3500);
 
-        // ===== 2. ESC KEY EXIT =====
+        // ===== 3. ESC KEY EXIT =====
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape' && escOverlay.classList.contains('show')) {
                 if (confirm('Exit the game and return to the Ark & Stone studio?')) {
@@ -307,7 +327,7 @@
             }
         });
 
-        // ===== 3. CLICK OVERLAY TO EXIT =====
+        // ===== 4. CLICK OVERLAY TO EXIT =====
         escOverlay.addEventListener('click', function() {
             if (escOverlay.classList.contains('show')) {
                 if (confirm('Exit the game and return to the Ark & Stone studio?')) {
@@ -316,13 +336,16 @@
             }
         });
 
-        // ===== 4. IFRAME FOCUS & TOUCH =====
-        var iframe = document.getElementById('gameFrame');
-        iframe.addEventListener('load', function() {
-            iframe.focus();
+        // ===== 5. HIDE SCROLLBARS & PREVENT CONTEXT MENU =====
+        document.body.style.overflow = 'hidden';
+        document.documentElement.style.overflow = 'hidden';
+        
+        // Disable right-click to prevent Rosebud menu exposure
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
         });
 
-        console.log('🪨 Ark & Stone Design Studios — Game loaded. Enjoy!');
+        console.log('🪨 Ark & Stone Design Studios — Game loaded in fullscreen mode. Enjoy!');
     })();
 </script>
 </body>
